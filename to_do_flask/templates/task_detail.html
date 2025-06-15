@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>{{ task.title }}</h2>
+  <p><strong>Описание:</strong> {{ task.description }}</p>
+  <p><strong>Статус:</strong> {{ task.status }}</p>
+  <p><strong>Дата создания:</strong> {{ task.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+
+  <a href="{{ url_for('tasks.get_all_tasks_cmd') }}">← Назад к списку</a>
+{% endblock %}

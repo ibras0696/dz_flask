@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Список задач</h2>
+
+<div style="text-align: center; margin-bottom: 20px;">
+  <a href="{{ url_for('tasks.add_task') }}">➕ Добавить задачу</a>
+</div>
+
+<!-- 🔍 Фильтр по статусу -->
+<div class="filter-bar">
+  <label>
+    <input type="checkbox" id="hide-done-checkbox">
+    Показать только невыполненные
+  </label>
+</div>
+
+<ul id="task-list">
+  {% for task in my_tasks %}
+    <li data-status="{{ task.status }}">
+      <div style="flex: 1;">
+        <strong>{{ task.title }}</strong> — {{ task.description }}
+
+        <div class="status-badge {{ 'status-done' if task.status == 'выполнено' else 'status-progress' }}">
+          {{ task.status }}
+        </div>
+
+        <form action="{{ url_for('tasks.update_task_status_cmd', task_id=task.id) }}" method="POST" class="status-form">
+          <select name="status" onchange="this.form.submit()">
+            <option value="в процессе" {% if task.status == 'в процессе' %}selected{% endif %}>В процессе</option>
+            <option value="выполнено" {% if task.status == 'выполнено' %}selected{% endif %}>Выполнено</option>
+          </select>
+        </form>
+      </div>
+
+      <form action="{{ url_for('tasks.delete_task_cmd', task_id=task.id) }}" method="POST" style="display: inline;">
+        <button type="submit">🗑 Удалить</button>
+      </form>
+    </li>
+  {% else %}
+    <li>Нет задач.</li>
+  {% endfor %}
+</ul>
+
+<!-- 🔧 Скрипт фильтрации -->
+<script>
+  const checkbox = document.getElementById('hide-done-checkbox');
+  const taskList = document.getElementById('task-list');
+
+  checkbox.addEventListener('change', () => {
+    const tasks = taskList.querySelectorAll('li');
+    tasks.forEach(task => {
+      const status = task.getAttribute('data-status');
+      if (checkbox.checked && status === 'выполнено') {
+        task.style.display = 'none';
+      } else {
+        task.style.display = 'flex';
+      }
+    });
+  });
+</script>
+{% endblock %}
